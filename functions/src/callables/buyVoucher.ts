@@ -56,8 +56,8 @@ export const buyVoucher = functions
     batch.update(fs.collection("user").doc(uidBuyer), {
       vouchers: admin.firestore.FieldValue.arrayUnion(voucherRef),
     });
-    // update voucher's user field to include buyer
-    batch.update(fs.collection("voucher").doc(voucherId), {
+    // update voucher's user field to point to buyer
+    batch.update(voucherRef, {
       voucher: fs.collection("user").doc(uidBuyer),
     });
 
