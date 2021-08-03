@@ -29,7 +29,7 @@ export const register = functions
     if (!username || !email || !password) {
       response.status(400).json({
         code: "invalid-argument",
-        message: "All fields: username, email, and password must be present.",
+        message: "All fields must be prsent: username, email, and password.",
       } as ErrorResponse);
       return;
     }
