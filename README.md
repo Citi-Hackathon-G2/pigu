@@ -16,16 +16,11 @@
 All response messages will adhere to the following:
 
 ```ts
-type SuccessResponse = {
-  success: true;
-}
-
 type ErrorResponse = {
-  success: false;
-  errMsg: string;
-}
-
-type APIResponse = SuccessResponse | ErrorResponse
+  code: FunctionsErrorCode;
+  message: string;
+  details?: unknown | undefined;
+};
 ```
 
 ### Register user: `POST /register`
@@ -39,6 +34,9 @@ type RegisterRequest = {
   password: string;
 }
 ```
+
+- Success response: `204 NO CONTENT`
+- Error response: `ErrorResponse`
 
 ### Buy voucher
 
