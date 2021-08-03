@@ -3,6 +3,7 @@
 
 - [API Reference](#api-reference)
   - [Register user: `POST /register`](#register-user-post-register)
+  - [Create voucher](#create-voucher)
   - [Buy voucher](#buy-voucher)
   - [Redeem voucher](#redeem-voucher)
   - [Transfer voucher](#transfer-voucher)
@@ -17,14 +18,20 @@
 
 ## API Reference
 
-All response messages will adhere to the following:
+All response messages will adhere to the following unless otherwise stated:
 
 ```ts
+type SuccessResponse = {
+  success: true;
+}
+
 type ErrorResponse = {
   code: FunctionsErrorCode;
   message: string;
   details?: unknown | undefined;
 };
+
+type APIResponse = SuccessResponse | ErrorResponse;
 ```
 
 ### Register user: `POST /register`
@@ -41,6 +48,21 @@ type RegisterRequest = {
 
 - Success response: `204 NO CONTENT`
 - Error response: `ErrorResponse`
+
+### Create voucher
+
+> [HTTPS callable](https://firebase.google.com/docs/functions/callable)
+
+- Called by any user who owns a shop
+
+```ts
+type CreateRequest = {
+  title: string;
+  shopId: string;
+  description?: string | undefined;
+  expireAt?: string | undefined;
+};
+```
 
 ### Buy voucher
 
