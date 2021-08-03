@@ -3,11 +3,11 @@
 
 - [API Reference](#api-reference)
   - [Register user: `POST /register`](#register-user-post-register)
-  - [Create shop](#create-shop)
-  - [Create voucher](#create-voucher)
-  - [Buy voucher](#buy-voucher)
-  - [Redeem voucher](#redeem-voucher)
-  - [Transfer voucher](#transfer-voucher)
+  - [Create shop: `createShop`](#create-shop-createshop)
+  - [Create voucher: `createVoucher`](#create-voucher-createvoucher)
+  - [Buy voucher: `buyVoucher`](#buy-voucher-buyvoucher)
+  - [Redeem voucher: `redeemVoucher`](#redeem-voucher-redeemvoucher)
+  - [Transfer voucher: `transferVoucher`](#transfer-voucher-transfervoucher)
 - [Firestore Schema](#firestore-schema)
   - [`user` collection](#user-collection)
   - [`shop` collection](#shop-collection)
@@ -50,7 +50,7 @@ type RegisterRequest = {
 - Success response: `204 NO CONTENT`
 - Error response: `ErrorResponse`
 
-### Create shop
+### Create shop: `createShop`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -63,7 +63,7 @@ type CreateRequest = {
 };
 ```
 
-### Create voucher
+### Create voucher: `createVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -79,7 +79,7 @@ type CreateRequest = {
 };
 ```
 
-### Buy voucher
+### Buy voucher: `buyVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -92,7 +92,7 @@ type BuyRequest = {
 }
 ```
 
-### Redeem voucher
+### Redeem voucher: `redeemVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -104,7 +104,7 @@ type RedeemRequest = {
 }
 ```
 
-### Transfer voucher
+### Transfer voucher: `transferVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
