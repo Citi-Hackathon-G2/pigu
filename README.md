@@ -10,6 +10,9 @@
   - [`user` collection](#user-collection)
   - [`shop` collection](#shop-collection)
   - [`voucher` collection](#voucher-collection)
+- [Developer Guide](#developer-guide)
+  - [Prerequisites](#prerequisites)
+  - [Start Developing](#start-developing)
 
 ## API Reference
 
@@ -114,3 +117,22 @@ type Voucher = {
   shop: shopDocumentRef;
 }
 ```
+
+## Developer Guide
+
+### Prerequisites
+
+1. Ensure you have the following globally installed first:
+   - [`yarn`](https://classic.yarnpkg.com/en/docs/install/)
+   - [`firebase-tools`](https://www.npmjs.com/package/firebase-tools)
+2. Ensure that you are logged in to `firebase` by entering `firebase login`
+
+### Start Developing
+
+To develop with hot reload and emulate *locally* the Firebase Auth, Firestore, and Firebase Functions services:
+
+```sh
+yarn dev
+```
+
+Head to <http://localhost:4000> to see the emulator UI.
