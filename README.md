@@ -84,10 +84,10 @@ type TransferRequest = {
 
 ```ts
 type User = {
-  id: string;
-  username: string;
+  id: string;                     // uuid of firebase auth user
+  username: string;               // unique key
   email: string;
-  vouchers: voucherDocumentRef[]; // vouchers which user owns
+  vouchers: voucherDocumentRef[]; // vouchers which user has bought
   shops: shopDocumentRef[];       // shops which user controls
 }
 ```
@@ -110,13 +110,9 @@ type Voucher = {
   id: string;
   title: string;
   description?: string | undefined;
-  discount: {
-    type: "percentage" | "absolute",
-    amount: number,
-  }
   expireAt?: Date | undefined;
-  redeemedAt?: Date | undefined;     // undefined if not yet redeemed
-  user: userDocumentRef | undefined; // undefined if not yet bought by user
+  redeemedAt?: Date | undefined;      // undefined if not yet redeemed
+  user?: userDocumentRef | undefined; // undefined if not yet bought by any user
   shop: shopDocumentRef;
 }
 ```
