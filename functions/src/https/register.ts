@@ -1,7 +1,7 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
 
 import { User } from "../schema/user";
+import { fs, auth } from "../utils/admin";
 
 type RegisterRequest = {
   username?: string | undefined;
@@ -14,11 +14,6 @@ type ErrorResponse = {
   message: string;
   details?: unknown;
 };
-
-admin.initializeApp();
-
-const fs = admin.firestore();
-const auth = admin.auth();
 
 export const register = functions
   .region("asia-southeast2")

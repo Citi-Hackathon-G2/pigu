@@ -2,15 +2,12 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 import { Voucher } from "../schema/voucher";
+import { fs } from "../utils/admin";
 
 type BuyRequest = {
   voucherId?: string | undefined;
   // TODO: other stripe related stuff
 };
-
-admin.initializeApp();
-
-const fs = admin.firestore();
 
 export const buyVoucher = functions
   .region("asia-southeast2")
@@ -35,7 +32,7 @@ export const buyVoucher = functions
     const voucherRef = fs.collection("voucher").doc(voucherId);
     const voucher = (await voucherRef.get()).data() as Voucher | undefined;
 
-    // check if voucher exists
+    // ensure voucher exists
     if (!voucher) {
       throw new functions.https.HttpsError(
         "failed-precondition",
@@ -43,7 +40,7 @@ export const buyVoucher = functions
       );
     }
 
-    // check if voucher is not yet bought
+    // ensure voucher is not yet bought by another customer
     if (voucher.user !== undefined) {
       throw new functions.https.HttpsError(
         "failed-precondition",
