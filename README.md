@@ -50,8 +50,7 @@ type RegisterRequest = {
 
 ```ts
 type BuyRequest = {
-  userId: string;
-  shopId: string;
+  voucherId: string;
   // TODO: other stripe related stuff
 }
 ```
@@ -86,11 +85,11 @@ type TransferRequest = {
 
 ```ts
 type User = {
-  id: string;                     // uuid of firebase auth user
-  username: string;               // unique key
+  id: string;       // uuid of firebase auth user
+  username: string; // unique key
   email: string;
-  vouchers: voucherDocumentRef[]; // vouchers which user has bought
-  shops: shopDocumentRef[];       // shops which user controls
+  vouchers: FirebaseFirestore.DocumentReference[]; // vouchers which user has bought
+  shops: FirebaseFirestore.DocumentReference[];    // shops which user controls
 }
 ```
 
@@ -101,7 +100,7 @@ type Shop = {
   id: string;
   name: string;
   tags: string[]
-  vouchers: voucherDocumentRef[]; // vouchers which shop has
+  vouchers: FirebaseFirestore.DocumentReference[]; // vouchers which shop has
 }
 ```
 
@@ -112,10 +111,11 @@ type Voucher = {
   id: string;
   title: string;
   description?: string | undefined;
+  createdAt: Date;
   expireAt?: Date | undefined;
   redeemedAt?: Date | undefined;      // undefined if not yet redeemed
-  user?: userDocumentRef | undefined; // undefined if not yet bought by any user
-  shop: shopDocumentRef;
+  user?: FirebaseFirestore.DocumentReference | undefined; // undefined if not yet bought by any user
+  shop: FirebaseFirestore.DocumentReference;
 }
 ```
 
