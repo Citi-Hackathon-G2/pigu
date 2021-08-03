@@ -3,9 +3,11 @@
 
 - [API Reference](#api-reference)
   - [Register user: `POST /register`](#register-user-post-register)
-  - [Buy voucher](#buy-voucher)
-  - [Redeem voucher](#redeem-voucher)
-  - [Transfer voucher](#transfer-voucher)
+  - [Create shop: `createShop`](#create-shop-createshop)
+  - [Create voucher: `createVoucher`](#create-voucher-createvoucher)
+  - [Buy voucher: `buyVoucher`](#buy-voucher-buyvoucher)
+  - [Redeem voucher: `redeemVoucher`](#redeem-voucher-redeemvoucher)
+  - [Transfer voucher: `transferVoucher`](#transfer-voucher-transfervoucher)
   - [Stripe checkout](#stripe-checkout)
 - [Firestore Schema](#firestore-schema)
   - [`user` collection](#user-collection)
@@ -18,14 +20,20 @@
 
 ## API Reference
 
-All response messages will adhere to the following:
+All response messages will adhere to the following unless otherwise stated:
 
 ```ts
+type SuccessResponse = {
+  success: true;
+}
+
 type ErrorResponse = {
   code: FunctionsErrorCode;
   message: string;
   details?: unknown | undefined;
 };
+
+type APIResponse = SuccessResponse | ErrorResponse;
 ```
 
 ### Register user: `POST /register`
@@ -43,7 +51,36 @@ type RegisterRequest = {
 - Success response: `204 NO CONTENT`
 - Error response: `ErrorResponse`
 
-### Buy voucher
+### Create shop: `createShop`
+
+> [HTTPS callable](https://firebase.google.com/docs/functions/callable)
+
+- Called by any authenticated user
+
+```ts
+type CreateRequest = {
+  name: string;
+  tags?: string[] | undefined;
+};
+```
+
+### Create voucher: `createVoucher`
+
+> [HTTPS callable](https://firebase.google.com/docs/functions/callable)
+
+- Called by any user who owns a shop
+
+```ts
+type CreateRequest = {
+  title: string;
+  price: number;
+  shopId: string;
+  description?: string | undefined;
+  expireAt?: string | undefined;
+};
+```
+
+### Buy voucher: `buyVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -56,7 +93,7 @@ type BuyRequest = {
 }
 ```
 
-### Redeem voucher
+### Redeem voucher: `redeemVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -68,7 +105,7 @@ type RedeemRequest = {
 }
 ```
 
-### Transfer voucher
+### Transfer voucher: `transferVoucher`
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
 
@@ -124,6 +161,7 @@ type Voucher = {
   id: string;
   title: string;
   description?: string | undefined;
+  price: number;
   createdAt: Date;
   expireAt?: Date | undefined;
   redeemedAt?: Date | undefined;      // undefined if not yet redeemed

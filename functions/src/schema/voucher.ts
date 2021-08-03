@@ -1,6 +1,7 @@
 export type Voucher = {
   title: string;
   description?: string | undefined;
+  price: number;
   createdAt: Date;
   expireAt?: Date | undefined;
   redeemedAt?: Date | undefined; // undefined if not yet redeemed

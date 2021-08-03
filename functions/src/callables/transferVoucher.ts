@@ -29,6 +29,8 @@ export const transferVoucher = functions
       );
     }
 
+    const senderRef = fs.collection("user").doc(uidSender);
+    const receiverRef = fs.collection("user").doc(uidReceiver);
     const voucherRef = fs.collection("voucher").doc(voucherId);
     const voucher = (await voucherRef.get()).data() as Voucher | undefined;
 
@@ -51,16 +53,16 @@ export const transferVoucher = functions
     // bulk transaction
     const batch = fs.batch();
     // update sender's vouchers field to exclude this voucher
-    batch.update(fs.collection("user").doc(uidSender), {
+    batch.update(senderRef, {
       vouchers: admin.firestore.FieldValue.arrayRemove(voucherRef),
     });
     // update receivers's vouchers field to include this voucher
-    batch.update(fs.collection("user").doc(uidReceiver), {
+    batch.update(receiverRef, {
       vouchers: admin.firestore.FieldValue.arrayUnion(voucherRef),
     });
     // update voucher's user field to point to receiver
     batch.update(voucherRef, {
-      voucher: fs.collection("user").doc(uidReceiver),
+      voucher: receiverRef,
     });
 
     try {
