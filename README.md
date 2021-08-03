@@ -12,7 +12,8 @@
   - [`voucher` collection](#voucher-collection)
 - [Developer Guide](#developer-guide)
   - [Prerequisites](#prerequisites)
-  - [Start Developing](#start-developing)
+  - [Installing](#installing)
+  - [Developing](#developing)
 
 ## API Reference
 
@@ -127,11 +128,23 @@ type Voucher = {
    - [`firebase-tools`](https://www.npmjs.com/package/firebase-tools)
 2. Ensure that you are logged in to `firebase` by entering `firebase login`
 
-### Start Developing
+### Installing
+
+Install all dependencies by running:
+
+```sh
+# change to /functions directory:
+cd functions
+# install all deps:
+yarn
+```
+
+### Developing
 
 To develop with hot reload and emulate *locally* the Firebase Auth, Firestore, and Firebase Functions services:
 
 ```sh
+# in /functions directory:
 yarn dev
 ```
 
