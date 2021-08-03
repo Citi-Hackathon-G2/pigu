@@ -1,5 +1,5 @@
-export * from "./callables/buy";
-export * from "./callables/redeem";
-export * from "./callables/transfer";
+export * from "./callables/buyVoucher";
+export * from "./callables/redeemVoucher";
+export * from "./callables/transferVoucher";
 
 export * from "./https/register";
