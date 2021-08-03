@@ -3,6 +3,7 @@
 
 - [API Reference](#api-reference)
   - [Register user: `POST /register`](#register-user-post-register)
+  - [Create shop](#create-shop)
   - [Create voucher](#create-voucher)
   - [Buy voucher](#buy-voucher)
   - [Redeem voucher](#redeem-voucher)
@@ -49,6 +50,19 @@ type RegisterRequest = {
 - Success response: `204 NO CONTENT`
 - Error response: `ErrorResponse`
 
+### Create shop
+
+> [HTTPS callable](https://firebase.google.com/docs/functions/callable)
+
+- Called by any authenticated user
+
+```ts
+type CreateRequest = {
+  name: string;
+  tags?: string[] | undefined;
+};
+```
+
 ### Create voucher
 
 > [HTTPS callable](https://firebase.google.com/docs/functions/callable)
@@ -58,6 +72,7 @@ type RegisterRequest = {
 ```ts
 type CreateRequest = {
   title: string;
+  price: number;
   shopId: string;
   description?: string | undefined;
   expireAt?: string | undefined;
@@ -133,6 +148,7 @@ type Voucher = {
   id: string;
   title: string;
   description?: string | undefined;
+  price: number;
   createdAt: Date;
   expireAt?: Date | undefined;
   redeemedAt?: Date | undefined;      // undefined if not yet redeemed

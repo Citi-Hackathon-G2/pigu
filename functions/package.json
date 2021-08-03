@@ -9,6 +9,7 @@
     "shell": "yarn build && firebase functions:shell",
     "start": "yarn shell",
     "deploy": "firebase deploy --only functions",
+    "typecheck": "tsc --noEmit",
     "logs": "firebase functions:log"
   },
   "engines": {

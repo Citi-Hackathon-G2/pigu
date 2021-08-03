@@ -5,7 +5,7 @@ import { fs } from "../utils/admin";
 import { Shop } from "../schema/shop";
 
 type CreateRequest = {
-  name: string;
+  name?: string | undefined;
   tags?: string[] | undefined;
 };
 

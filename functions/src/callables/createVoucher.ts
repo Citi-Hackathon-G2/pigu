@@ -8,6 +8,7 @@ import { User } from "../schema/user";
 type CreateRequest = {
   title?: string | undefined;
   description?: string | undefined;
+  price?: number | undefined;
   expireAt?: string | undefined;
   shopId?: string | undefined;
 };
@@ -16,7 +17,7 @@ export const createVoucher = functions
   .region("asia-southeast2")
   .https.onCall(async (data: CreateRequest, context) => {
     const uidCreator = context.auth?.uid;
-    const { title, description, expireAt, shopId } = data ?? {};
+    const { title, description, price, expireAt, shopId } = data ?? {};
 
     if (!uidCreator) {
       throw new functions.https.HttpsError(
@@ -25,10 +26,10 @@ export const createVoucher = functions
       );
     }
 
-    if (!title || !shopId) {
+    if (!title || !shopId || !price) {
       throw new functions.https.HttpsError(
         "invalid-argument",
-        "All fields must be present: title and shopId."
+        "All fields must be present: title, price and shopId."
       );
     }
 
@@ -50,6 +51,7 @@ export const createVoucher = functions
     const voucher: Voucher = {
       title: title,
       description: description,
+      price: price,
       createdAt: new Date(),
       expireAt: expireAt ? new Date(expireAt) : undefined,
       shop: shopRef,
