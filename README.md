@@ -139,6 +139,15 @@ cd functions
 yarn
 ```
 
+Then install the Firebase emulators by running:
+
+```sh
+# in /functions directory:
+firebase init
+```
+
+When prompted, choose `Emulators: Set up local emulators for Firebase products` **only**, and accept all the default values that are already set. Remember to actually download the emulators!
+
 ### Developing
 
 To develop with hot reload and emulate *locally* the Firebase Auth, Firestore, and Firebase Functions services:
