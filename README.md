@@ -8,7 +8,6 @@
   - [Buy voucher: `buyVoucher`](#buy-voucher-buyvoucher)
   - [Redeem voucher: `redeemVoucher`](#redeem-voucher-redeemvoucher)
   - [Transfer voucher: `transferVoucher`](#transfer-voucher-transfervoucher)
-  - [Stripe checkout](#stripe-checkout)
 - [Firestore Schema](#firestore-schema)
   - [`user` collection](#user-collection)
   - [`shop` collection](#shop-collection)
@@ -114,18 +113,6 @@ type RedeemRequest = {
 ```ts
 type TransferRequest = {
   userId: string;
-}
-```
-
-### Stripe checkout
-
-> [Stripe checkout flow](https://stripe.com/docs/payments/checkout)
-
-- Called by any authenticated user when purchasing a voucher
-
-```ts
-type StripeCheckoutRequest = {
-  
 }
 ```
 
