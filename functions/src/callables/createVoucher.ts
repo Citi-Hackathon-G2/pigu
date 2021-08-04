@@ -8,7 +8,7 @@ import { User } from "../schema/user";
 type CreateRequest = {
   title?: string | undefined;
   description?: string | undefined;
-  price?: number | undefined;
+  price?: string | undefined;
   expireAt?: string | undefined;
   shopId?: string | undefined;
 };
@@ -39,7 +39,7 @@ export const createVoucher = functions
 
     // check if user is shop's owner
     const { shops } = (await userRef.get()).data() as User;
-    const isShopOwner = shops?.includes(shopRef);
+    const isShopOwner = shops?.map((shop) => shop.id).includes(shopRef.id);
 
     if (!isShopOwner) {
       throw new functions.https.HttpsError(

@@ -29,7 +29,7 @@ export const createShop = functions
       );
     }
 
-    if (!Array.isArray(tags)) {
+    if (tags != null && !Array.isArray(tags)) {
       throw new functions.https.HttpsError(
         "invalid-argument",
         "Field tags must be a list of strings."
@@ -50,7 +50,7 @@ export const createShop = functions
     batch.set(shopRef, shop);
     // update the user's shops array to include the shop's reference
     batch.update(userRef, {
-      vouchers: admin.firestore.FieldValue.arrayUnion(shopRef),
+      shops: admin.firestore.FieldValue.arrayUnion(shopRef),
     });
 
     try {
