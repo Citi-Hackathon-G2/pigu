@@ -14,15 +14,18 @@ const domain = process.env.DOMAIN ?? "";
 
 type BuyRequest = {
   voucherId?: string | undefined;
-  quantity?: number;
-  currency?: string; // three-letter ISO code https://stripe.com/docs/currencies
+  quantity?: number | undefined;
+  paymentMethodId?: string | undefined;
+  paymentIntentId?: string | undefined;
+  // currency?: string; // three-letter ISO code https://stripe.com/docs/currencies
 };
 
 export const buyVoucher = functions
   .region("asia-southeast2")
   .https.onCall(async (data: BuyRequest, context) => {
     const uidBuyer = context.auth?.uid;
-    const { voucherId, quantity, currency } = data ?? {};
+    const { voucherId, quantity, paymentMethodId, paymentIntentId } =
+      data ?? {};
 
     if (!domain) {
       throw new functions.https.HttpsError(
@@ -45,10 +48,22 @@ export const buyVoucher = functions
       );
     }
 
-    if (!voucherId || !quantity || !currency) {
+    if (!voucherId || !quantity) {
       throw new functions.https.HttpsError(
         "invalid-argument",
-        "All fields must be present: voucherId, amount, currency."
+        "All fields must be present: voucherId, quantity."
+      );
+    }
+
+    if (
+      !(
+        (paymentMethodId && !paymentIntentId) ||
+        (!paymentMethodId && paymentIntentId)
+      )
+    ) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Either field must be present, but not both: paymentMethodId, paymentIntentId."
       );
     }
 
@@ -71,16 +86,46 @@ export const buyVoucher = functions
       );
     }
 
-    // TODO: stripe payment flow; assume it passes for now
-    // PaymentIntent tracks the customer's payment lifecycle, ultimately creating one successful charge.
-    // create exactly one PaymentIntent for each order or customer session.
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "grabpay"],
-      line_items: [{ price: voucher.costPrice.toString(), quantity: 1 }],
-      mode: "payment",
-      success_url: `${domain}?success=true`,
-      cancel_url: `${domain}?success=true`,
-    });
+    // stripe payment flow
+    let intent;
+    if (paymentMethodId) {
+      intent = await stripe.paymentIntents.create({
+        payment_method: paymentMethodId,
+        amount: Math.round(voucher.price * quantity * 100) / 100, // 2dp
+        currency: "usd",
+        confirmation_method: "manual",
+        confirm: true,
+      });
+    } else if (paymentIntentId) {
+      intent = await stripe.paymentIntents.confirm(paymentIntentId);
+    }
+
+    if (intent?.status === "requires_action") {
+      // 3D secure authentication, client needs to handle
+      return {
+        success: true,
+        requiresAction: true,
+        paymentIntentClientSecret: intent.client_secret,
+      };
+    } else if (intent?.status === "requires_payment_method") {
+      // payment failed, show an error to the user
+      throw new functions.https.HttpsError(
+        "internal",
+        "Payment gateway upstream failed."
+      );
+    } else if (intent?.status === "succeeded") {
+      // The payment didn't need any additional actions and completed
+      // Handle post-payment fulfillment
+      console.log("stripe fulfillment success");
+    } else {
+      throw new functions.https.HttpsError(
+        "internal",
+        "Invalid PaymentIntent status."
+      );
+    }
+
+    // TODO possibly save the card for future transactions
+    // https://stripe.com/docs/payments/accept-a-payment-synchronously?platform=web#create-payment-intent
 
     // bulk transaction
     const batch = fs.batch();
