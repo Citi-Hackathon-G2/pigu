@@ -5,12 +5,11 @@ import stripeModule from "stripe";
 import { Voucher } from "../schema/voucher";
 import { fs } from "../utils/admin";
 
-const stripeApiKey = process.env.STRIPE_API_KEY ?? "";
+const stripeApiKey = process.env.STRIPE_API_KEY ?? "your stripe api key here";
 const stripe = new stripeModule.Stripe(
   stripeApiKey,
   {} as stripeModule.StripeConfig
 );
-const domain = process.env.DOMAIN ?? "";
 
 type BuyRequest = {
   voucherId?: string | undefined;
@@ -26,14 +25,13 @@ export const buyVoucher = functions
     const uidBuyer = context.auth?.uid;
     const { voucherId, quantity, paymentMethodId, paymentIntentId } =
       data ?? {};
+    console.log(`uidBuyer: ${uidBuyer}`);
+    console.log(`voucherId: ${voucherId}`);
+    console.log(`quantity: ${quantity}`);
+    console.log(`paymentMethodId: ${paymentMethodId}`);
+    console.log(`paymentIntentId: ${paymentIntentId}`);
 
-    if (!domain) {
-      throw new functions.https.HttpsError(
-        "internal",
-        "The function is misconfigured: domain."
-      );
-    }
-
+    console.log(`checking stripeApiKey: ${stripeApiKey}`);
     if (!stripeApiKey) {
       throw new functions.https.HttpsError(
         "internal",
@@ -41,6 +39,7 @@ export const buyVoucher = functions
       );
     }
 
+    console.log(`checking authenticated with uidBuyer: ${uidBuyer}`);
     if (!uidBuyer) {
       throw new functions.https.HttpsError(
         "unauthenticated",
@@ -48,6 +47,7 @@ export const buyVoucher = functions
       );
     }
 
+    console.log(`checking voucherId ${voucherId}, quantity ${quantity}`);
     if (!voucherId || !quantity) {
       throw new functions.https.HttpsError(
         "invalid-argument",
@@ -55,6 +55,8 @@ export const buyVoucher = functions
       );
     }
 
+    console.log(`checking paymentMethodId ${paymentMethodId},
+                  paymentIntentId ${paymentIntentId}`);
     if (
       !(
         (paymentMethodId && !paymentIntentId) ||
@@ -70,6 +72,8 @@ export const buyVoucher = functions
     const voucherRef = fs.collection("voucher").doc(voucherId);
     const voucher = (await voucherRef.get()).data() as Voucher | undefined;
 
+    console.log(`check voucherRef ${JSON.stringify(voucherRef)}
+                  , voucher ${JSON.stringify(voucher)}`);
     // ensure voucher exists
     if (!voucher) {
       throw new functions.https.HttpsError(
@@ -78,6 +82,7 @@ export const buyVoucher = functions
       );
     }
 
+    console.log(`checking if voucher has been used`);
     // ensure voucher is not yet bought by another customer
     if (voucher.user !== undefined) {
       throw new functions.https.HttpsError(
@@ -86,12 +91,13 @@ export const buyVoucher = functions
       );
     }
 
+    console.log(`starting stripe payment flow`);
     // stripe payment flow
     let intent;
     if (paymentMethodId) {
       intent = await stripe.paymentIntents.create({
         payment_method: paymentMethodId,
-        amount: Math.round(voucher.price * quantity * 100) / 100, // 2dp
+        amount: Math.round(Number(voucher.price) * quantity * 100) / 100, // 2dp
         currency: "usd",
         confirmation_method: "manual",
         confirm: true,
@@ -127,12 +133,28 @@ export const buyVoucher = functions
     // TODO possibly save the card for future transactions
     // https://stripe.com/docs/payments/accept-a-payment-synchronously?platform=web#create-payment-intent
 
+    // update buyer's vouchers field to include this voucher
+    const hasUser = await fs
+      .collection("user")
+      .doc(uidBuyer)
+      .get()
+      .then((doc) => doc.exists);
+    if (!hasUser) {
+      throw new functions.https.HttpsError(
+        "failed-precondition",
+        "User does not exist."
+      );
+    }
+
     // bulk transaction
     const batch = fs.batch();
-    // update buyer's vouchers field to include this voucher
+
+    console.log(`update buyer's vouchers field to include this voucher`);
     batch.update(fs.collection("user").doc(uidBuyer), {
       vouchers: admin.firestore.FieldValue.arrayUnion(voucherRef),
     });
+
+    console.log(`update voucher's user field to point to buyer`);
     // update voucher's user field to point to buyer
     batch.update(voucherRef, {
       voucher: fs.collection("user").doc(uidBuyer),
