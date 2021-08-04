@@ -72,7 +72,7 @@ type CreateRequest = {
 ```ts
 type CreateRequest = {
   title: string;
-  price: number;
+  price: string;
   shopId: string;
   description?: string | undefined;
   expireAt?: string | undefined;
@@ -148,7 +148,7 @@ type Voucher = {
   id: string;
   title: string;
   description?: string | undefined;
-  price: number;
+  price: string;
   createdAt: Date;
   expireAt?: Date | undefined;
   redeemedAt?: Date | undefined;      // undefined if not yet redeemed
