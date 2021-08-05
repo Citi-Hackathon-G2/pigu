@@ -4,9 +4,7 @@
     "indexes": "firestore/firestore.indexes.json"
   },
   "functions": {
-    "predeploy": [
-      "yarn --prefix \"$RESOURCE_DIR\" build"
-    ],
+    "predeploy": ["yarn --cwd ./functions build"],
     "source": "functions"
   },
   "emulators": {
