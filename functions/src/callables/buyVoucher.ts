@@ -162,7 +162,7 @@ export const buyVoucher = functions
       console.log(`update voucher's user field to point to buyer`);
       // update voucher's user field to point to buyer
       batch.update(voucherRef, {
-        voucher: fs.collection("user").doc(uidBuyer),
+        user: fs.collection("user").doc(uidBuyer),
       });
 
       try {

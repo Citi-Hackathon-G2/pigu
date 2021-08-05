@@ -1,4 +1,5 @@
 import * as functions from "firebase-functions";
+import { User } from "../schema/user";
 
 import { Voucher } from "../schema/voucher";
 import { fs } from "../utils/admin";
@@ -37,9 +38,13 @@ export const redeemVoucher = functions
         "Voucher does not exist."
       );
     }
-
+    // console.log(voucher);
+    const userObject = await voucher.user?.get();
+    const user = userObject?.data() as User | undefined;
+    // const users = (await voucher.user.get()).data() as User | undefined;
+    // console.log(user);
     // ensure voucher has already been bought by a customer
-    if (voucher.user === undefined) {
+    if (user === undefined) {
       throw new functions.https.HttpsError(
         "failed-precondition",
         "Voucher has not been bought by a customer yet."
